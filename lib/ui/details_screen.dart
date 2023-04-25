@@ -1,4 +1,9 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expenditure/controllers/firebase_controller.dart';
 import 'package:expenditure/controllers/list_controller.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,6 +16,7 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   final ListController listController = Get.put(ListController());
+  final FirebaseController fb = Get.put(FirebaseController());
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
   @override
@@ -19,7 +25,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
     var h = MediaQuery.of(context).size.height;
     return GestureDetector(
       onTap: () {
-        listController.changeIndex(-1);
+        //listController.changeIndex(-1);
+        fb.selectedIndex.value = -1;
       },
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -52,179 +59,226 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   const SizedBox(
                     height: 50,
                   ),
-                  GetBuilder<ListController>(builder: (c) {
+                  GetX<FirebaseController>(builder: (c) {
                     return ListView.separated(
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 5,
+                      itemCount: c.items.value.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        if (listController.selectedIndex == index) {
-                          return InkWell(
-                            borderRadius: BorderRadius.circular(15),
-                            onTap: () {
-                              c.changeIndex(index);
-                            },
-                            child: Container(
-                              width: w * 0.85,
-                              height: h * 0.2,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF383837),
+                        double overallSum=0.0;
+                        c.items.value.forEach((element) {
+                          overallSum+=double.parse(element.expenses![0].toString());
+                        });
+                        return c.selectedIndex.value == index
+                            ? InkWell(
                                 borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: const [
-                                        Text(
-                                          'Petrol',
-                                          style: TextStyle(fontSize: 24),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Icon(Icons.edit),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    const Text(
-                                      '500',
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Row(
+                                onTap: () {
+                                  setState(() {
+                                    log("before: ${fb.selectedIndex.value.toString()}");
+                                    fb.selectedIndex.value = index;
+                                    log("after: ${fb.selectedIndex.value.toString()}");
+                                  });
+                                },
+                                child: Container(
+                                  width: w * 0.85,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF383837),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        SizedBox(
-                                          width: w * 0.5,
-                                          child: TextFormField(
-                                            controller: controller,
-                                            focusNode: focusNode,
-                                            autofillHints: const [
-                                              AutofillHints.email
-                                            ],
-                                            keyboardType: TextInputType.number,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.normal,
+                                        Row(
+                                          children: [
+                                            Text(
+                                              c.items.value[index].itemTitle
+                                                  .toString(),
+                                              style:
+                                                  const TextStyle(fontSize: 24),
                                             ),
-                                            onFieldSubmitted: (String text) {},
-                                            textInputAction:
-                                                TextInputAction.next,
-                                            decoration: InputDecoration(
-                                                focusColor: Colors.transparent,
-                                                filled: true,
-                                                fillColor:
-                                                    const Color(0xff1E1F20),
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: const BorderSide(
-                                                      width: 0,
-                                                      style: BorderStyle.none),
-                                                ),
-                                                hintText: "Enter amount",
-                                                hintStyle: const TextStyle(
-                                                    fontSize: 16,
-                                                    color: Color(0xff767676),
-                                                    letterSpacing: 1)),
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            const Icon(Icons.edit),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          "${c.items.value[index].expenses?[0].toString()}",
+                                          style: const TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 22,
                                           ),
                                         ),
                                         const SizedBox(
-                                          width: 20,
+                                          height: 20,
                                         ),
-                                        Container(
-                                          width: w * 0.15,
-                                          height: 55,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.blue,
-                                          ),
-                                          child: const Icon(
-                                            Icons.done,
-                                            color: Colors.black,
-                                            size: 30,
-                                          ),
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: w * 0.5,
+                                              child: TextFormField(
+                                                onChanged: (value) {},
+                                                controller: controller,
+                                                focusNode: focusNode,
+                                                autofillHints: const [
+                                                  AutofillHints.email
+                                                ],
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                                onFieldSubmitted:
+                                                    (String text) {},
+                                                textInputAction:
+                                                    TextInputAction.next,
+                                                decoration: InputDecoration(
+                                                    focusColor:
+                                                        Colors.transparent,
+                                                    filled: true,
+                                                    fillColor:
+                                                        const Color(0xff1E1F20),
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      borderSide:
+                                                          const BorderSide(
+                                                              width: 0,
+                                                              style: BorderStyle
+                                                                  .none),
+                                                    ),
+                                                    hintText: "Enter amount",
+                                                    hintStyle: const TextStyle(
+                                                        fontSize: 16,
+                                                        color:
+                                                            Color(0xff767676),
+                                                        letterSpacing: 1)),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 20,
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                if (controller.text != "") {
+                                                  FirebaseFirestore.instance
+                                                      .collection(
+                                                          "exCollection")
+                                                      .doc(
+                                                          "UpSf8DEwZZ3iNEuOScAt")
+                                                      .collection("items")
+                                                      .doc(c.items.value[index]
+                                                          .docId
+                                                          .toString())
+                                                      .update({
+                                                    "expenses": [
+                                                      double.parse(
+                                                          controller.text)
+                                                    ]
+                                                  });
+                                                }
+                                              },
+                                              child: Container(
+                                                width: w * 0.15,
+                                                height: 55,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  color: Colors.blue,
+                                                ),
+                                                child: const Icon(
+                                                  Icons.done,
+                                                  color: Colors.black,
+                                                  size: 30,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        } else {
-                          return InkWell(
-                            borderRadius: BorderRadius.circular(15),
-                            onTap: () {
-                              c.changeIndex(index);
-                            },
-                            child: Container(
-                              width: w * 0.85,
-                              // height: h * 0.17,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF383837),
+                              )
+                            : InkWell(
                                 borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: const [
+                                onTap: () {
+                                  //fb.changeIndex(index);
+
+                                  log("before: ${fb.selectedIndex.value.toString()}");
+
+                                  fb.selectedIndex.value = index;
+                                  log("After: ${fb.selectedIndex.value.toString()}");
+
+                                  setState(() {});
+                                },
+                                child: Container(
+                                  width: w * 0.85,
+                                  // height: h * 0.17,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF383837),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              c.items.value[index].itemTitle
+                                                  .toString(),
+                                              style:
+                                                  const TextStyle(fontSize: 24),
+                                            ),
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            const Icon(Icons.edit),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
                                         Text(
-                                          'Petrol',
-                                          style: TextStyle(fontSize: 24),
+                                          "${c.items.value[index].expenses?[0].toString()}",
+                                          style: const TextStyle(
+                                              color: Colors.red, fontSize: 22),
                                         ),
-                                        SizedBox(
-                                          width: 10,
+                                        const SizedBox(
+                                          height: 30,
                                         ),
-                                        Icon(Icons.edit),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Sum: ',
+                                              style: TextStyle(fontSize: 22),
+                                            ),
+                                            Text(
+                                              '${overallSum}',
+                                              style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 24,
+                                              ),
+                                            ),
+                                          ],
+                                        )
                                       ],
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    const Text(
-                                      '500',
-                                      style: TextStyle(
-                                          color: Colors.red, fontSize: 22),
-                                    ),
-                                    const SizedBox(
-                                      height: 30,
-                                    ),
-                                    Row(
-                                      children: const [
-                                        Text(
-                                          'Sum: ',
-                                          style: TextStyle(fontSize: 22),
-                                        ),
-                                        Text(
-                                          '9000',
-                                          style: TextStyle(
-                                            color: Colors.blue,
-                                            fontSize: 24,
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        }
+                              );
                       },
                       separatorBuilder: (BuildContext context, int index) =>
                           const SizedBox(

@@ -1,4 +1,5 @@
 import 'package:expenditure/ui/home_screen.dart';
+import 'package:expenditure/ui/login.dart';
 import 'package:expenditure/utils/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: T1.themeData(),
-      home: const HomeScreen(),
+      home: const Login(),
     );
   }
 }

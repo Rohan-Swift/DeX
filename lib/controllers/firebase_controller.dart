@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 class FirebaseController extends GetxController {
   RxList<Expenses> expenses = <Expenses>[].obs;
   RxList<Items> items = <Items>[].obs;
+  RxInt selectedIndex = (-1).obs;
 
   @override
   void onInit() {
@@ -24,9 +25,13 @@ class FirebaseController extends GetxController {
     return v;
   }
 
-  Stream<List<Items>> connectToItems() {
-    var x =
-        FirebaseFirestore.instance.collection("items").snapshots().map((query) {
+  Stream<List<Items>> connectToItems(String docID) {
+    var x = FirebaseFirestore.instance
+        .collection("exCollection")
+        .doc(docID)
+        .collection("items")
+        .snapshots()
+        .map((query) {
       var result = query.docs.map((e) => Items.fromDocument(e)).toList();
       return result;
     });

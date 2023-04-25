@@ -1,3 +1,4 @@
+import 'package:expenditure/controllers/firebase_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'details_screen.dart';
@@ -8,8 +9,10 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
- 
+
 class _HomeScreenState extends State<HomeScreen> {
+  final fb = Get.put(FirebaseController());
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -52,6 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {
+                          fb.items.bindStream(fb.connectToItems(
+                              "UpSf8DEwZZ3iNEuOScAt"));
                           Get.to(() => const DetailsScreen());
                         },
                         child: Container(
