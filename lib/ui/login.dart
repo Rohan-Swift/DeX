@@ -96,19 +96,22 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     width: 250,
                     height: 50,
-                    child: ElevatedButton(
-                      style: const ButtonStyle(
-                        backgroundColor:
-                            MaterialStatePropertyAll(Colors.lightGreen),
-                      ),
-                      onPressed: () {
-                        Get.to(
-                          () => OtpScreen(phoneNumber: _phoneController.text),
-                        );
-                      },
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(fontSize: 22),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: ElevatedButton(
+                        style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.lightGreen),
+                        ),
+                        onPressed: () {
+                          Get.to(
+                            () => OtpScreen(phoneNumber: _phoneController.text),
+                          );
+                        },
+                        child: const Text(
+                          'Login',
+                          style: TextStyle(fontSize: 22),
+                        ),
                       ),
                     ),
                   ),
@@ -118,19 +121,23 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     width: 250,
                     height: 50,
-                    child: ElevatedButton(
-                      style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.brown),
-                      ),
-                      onPressed: () {},
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.g_mobiledata_rounded,
-                          ),
-                          Text('Login with Google')
-                        ],
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: ElevatedButton(
+                        style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.brown),
+                        ),
+                        onPressed: () {},
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(
+                              Icons.g_mobiledata_rounded,
+                            ),
+                            Text('Login with Google')
+                          ],
+                        ),
                       ),
                     ),
                   ),
