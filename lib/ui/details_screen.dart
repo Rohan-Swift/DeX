@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expenditure/controllers/firebase_controller.dart';
 import 'package:expenditure/controllers/list_controller.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -261,13 +260,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                         ),
                                         Row(
                                           children: [
-                                            Text(
+                                            const Text(
                                               'Sum: ',
                                               style: TextStyle(fontSize: 22),
                                             ),
                                             Text(
                                               '${overallSum}',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.blue,
                                                 fontSize: 24,
                                               ),

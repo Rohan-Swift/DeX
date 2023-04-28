@@ -9,7 +9,6 @@ class FirebaseController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     expenses.bindStream(connectToExpenses());
   }

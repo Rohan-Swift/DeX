@@ -20,13 +20,14 @@ class _LoginState extends State<Login> {
     return GestureDetector(
       onTap: () {
         _phoneNode.unfocus();
+        _emailNode.unfocus();
       },
       child: SafeArea(
         child: Scaffold(
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(22.0),
-              child: Center(
+          body: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(22.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

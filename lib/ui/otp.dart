@@ -1,12 +1,13 @@
 import 'package:expenditure/ui/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpScreen extends StatefulWidget {
-  final String phoneNumber;
-  const OtpScreen({Key? key, required this.phoneNumber}) : super(key: key);
+  String phoneNumber;
+  OtpScreen({Key? key, required this.phoneNumber}) : super(key: key);
 
   @override
   State<OtpScreen> createState() => _PinputExampleState();
@@ -18,17 +19,37 @@ class _PinputExampleState extends State<OtpScreen> {
   final formKey = GlobalKey<FormState>();
   String _verificationCode = '';
 
+  //timer
+  late Timer _timer;
+  int _start = 59;
+  int _completed = 0;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _verifyPhone();
+    startTimer();
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_start == 0) {
+          _timer.cancel();
+          _completed = 1;
+        } else {
+          _start--;
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
     pinController.dispose();
     focusNode.dispose();
+    _timer.cancel();
     super.dispose();
   }
 
@@ -65,7 +86,7 @@ class _PinputExampleState extends State<OtpScreen> {
                   ],
                 ),
                 const SizedBox(
-                  height: 300,
+                  height: 270,
                 ),
                 const Text(
                   'Enter OTP',
@@ -75,8 +96,15 @@ class _PinputExampleState extends State<OtpScreen> {
                   height: 20,
                 ),
                 const Text(
-                  'A 6 digit code has been sent to your mobile number ',
+                  'A 6 digit code has been sent to your mobile number',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '+91 ${widget.phoneNumber}',
+                  style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(
                   height: 30,
@@ -143,7 +171,7 @@ class _PinputExampleState extends State<OtpScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 30,
+                  height: 50,
                 ),
                 Center(
                   child: SizedBox(
@@ -156,8 +184,7 @@ class _PinputExampleState extends State<OtpScreen> {
                           backgroundColor:
                               MaterialStatePropertyAll(Colors.lightGreen),
                         ),
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                         child: const Text(
                           'Verify OTP',
                           style: TextStyle(fontSize: 22),
@@ -167,18 +194,26 @@ class _PinputExampleState extends State<OtpScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 30,
+                  height: 50,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const [
-                    Text(
-                      'Request code again in',
+                  children: [
+                    const Text(
+                      'Request code again in:',
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
-                    Text('00:59s')
+                    Text('00:${_start.toString().padLeft(2, '0')}s'),
                   ],
-                )
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                if (_completed == 1)
+                  Center(
+                      child: TextButton(
+                          onPressed: () {},
+                          child: const Text("Request OTP again")))
               ],
             ),
           ),

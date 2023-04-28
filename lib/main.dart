@@ -1,4 +1,4 @@
-import 'package:expenditure/ui/home_screen.dart';
+
 import 'package:expenditure/ui/login.dart';
 import 'package:expenditure/utils/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
