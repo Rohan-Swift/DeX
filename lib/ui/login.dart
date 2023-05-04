@@ -107,10 +107,19 @@ class _LoginState extends State<Login> {
                                 MaterialStatePropertyAll(Colors.lightGreen),
                           ),
                           onPressed: () {
-                            Get.to(
-                              () =>
-                                  OtpScreen(phoneNumber: _phoneController.text),
-                            );
+                            if (_phoneController.toString() == '' &&
+                                _phoneController.text.length < 10) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content:
+                                    Text("Please enter valid Phone Number"),
+                              ));
+                            } else {
+                              Get.to(
+                                () => OtpScreen(
+                                    phoneNumber: _phoneController.text),
+                              );
+                            }
                           },
                           child: const Text(
                             'Login',
